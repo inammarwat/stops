@@ -27,3 +27,32 @@ $$
 Y \sim \text{Bernoulli}(\rho), \quad \text{where} \quad 
 \rho = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
 $$
+
+
+$$
+\widehat{\text{arrested}} = 0.177 
++ 0.0614 \cdot \text{sex}_{\text{Male}} 
+- 0.0445 \cdot \text{race}_{\text{White}} 
++ 0.0146 \cdot \text{zone}_{\text{B}} 
++ 0.00610 \cdot \text{zone}_{\text{C}} 
++ 0.0781 \cdot \text{zone}_{\text{D}} 
++ 0.00190 \cdot \text{zone}_{\text{E}} 
+- 0.00271 \cdot \text{zone}_{\text{F}} 
++ 0.0309 \cdot \text{zone}_{\text{G}} 
++ 0.0757 \cdot \text{zone}_{\text{H}} 
++ \text{(interaction terms for race and zone)}
+$$
+
+```{r}
+#| label: fit_stops
+#| cache: true
+
+x <- stops |>
+  filter(race %in% c("black", "white")) |>
+  mutate(race = str_to_title(race), 
+         sex = str_to_title(sex))
+
+fit_stops <- linear_reg() |>
+  set_engine("lm") |>
+  fit(arrested ~ sex + race*zone, data = x)
+```
