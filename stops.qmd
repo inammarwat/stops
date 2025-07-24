@@ -2,5 +2,16 @@
 title: "Stops"
 author: "Inam Khan"
 format: html
+execute: 
+  echo: false
+  message: false
+  warning: false
 ---
 
+
+```{r}
+library(tidyverse)
+library(primer.data)
+```
+
+Racial disparities in policing continue to raise important questions about equity and justice, especially during routine traffic stops. Using data from the Stanford Open Policing Project, which documents over 400,000 traffic stops in New Orleans from 2011 to 2018, this project explores whether a driver's race influences their likelihood of being arrested, even after accounting for other factors like age, sex, and location.
