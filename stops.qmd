@@ -14,10 +14,68 @@ library(tidyverse)
 library(primer.data)
 library(tidymodels)
 library(broom)
+library(gt)
+library(marginaleffects)
+library(tidyverse)
+library(scales)
+library(tidytext)
+```
+
+```{r}
+#| label: fit_stops
+#| cache: true
+
+x <- stops |>
+  filter(race %in% c("black", "white")) |>
+  mutate(race = str_to_title(race), 
+         sex = str_to_title(sex))
+
+fit_stops <- linear_reg() |>
+  set_engine("lm") |>
+  fit(arrested ~ sex + race*zone, data = x)
+```
+
+```{r}
+# Generate predictions with balanced background variables
+predictions <- plot_predictions(fit_stops$fit,
+                                newdata = "balanced",
+                                condition = c("zone", "race", "sex"),
+                                draw = FALSE) |> 
+  as_tibble() |> 
+  group_by(zone, sex) |> 
+  mutate(sort_order = estimate[race == "Black"]) |> 
+  ungroup() |> 
+  mutate(zone = reorder_within(zone, sort_order, sex))
+
+# Create the plot
+ggplot(predictions, aes(x = zone, color = race)) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), 
+                width = 0.2,
+                position = position_dodge(width = 0.5)) +
+  geom_point(aes(y = estimate), 
+             size = 2,
+             position = position_dodge(width = 0.5)) +
+  facet_wrap(~ sex, scales = "free_x") +
+  scale_x_reordered() +
+  scale_y_continuous(labels = percent_format()) +
+  labs(
+    title = "Predicted Arrest Rates by Race and Zone",
+    subtitle = "Black males face the highest predicted arrest rates across most zones in New Orleans",
+    x = "Police Zone",
+    y = "Predicted Probability of Arrest",
+    color = "Race",
+    caption = "Source: Stanford Open Policing Project, New Orleans Traffic Stops Data (2011–2018)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        plot.title = element_text(face = "bold", size = 16),
+        plot.subtitle = element_text(size = 12))
 ```
 
 Racial disparities in policing continue to raise important questions about equity and justice, especially during routine traffic stops. Using data from the Stanford Open Policing Project, which documents over 400,000 traffic stops in New Orleans from 2011 to 2018, this project explores whether a driver's race influences their likelihood of being arrested, even after accounting for other factors like age, sex, and location.
+We model the likelihood of arrest during a traffic stop—a binary outcome—as a logistic function of the driver’s race and sex, allowing us to estimate how these characteristics are associated with arrest probability.
 One limitation of our analysis is that the data may not fully reflect the broader population, as the dataset has been substantially reduced from its original form and may contain biases introduced by non-random patterns in officer behavior or regional enforcement practices.
+Black males in Zone 3 had the highest predicted arrest probability at 32% (95% CI: 30% to 34%), while White females in the same zone had the lowest at 24% (95% CI: 22% to 26%), highlighting a substantial disparity in outcomes even after adjusting for other factors.
 
 $$
 P(Y = 1) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
@@ -43,16 +101,17 @@ $$
 + \text{(interaction terms for race and zone)}
 $$
 
+
+
 ```{r}
-#| label: fit_stops
-#| cache: true
+fit_stops_logistic <- logistic_reg() |>
+  set_engine("glm") |>
+  fit(as.factor(arrested) ~ sex + race, data = x)
 
-x <- stops |>
-  filter(race %in% c("black", "white")) |>
-  mutate(race = str_to_title(race), 
-         sex = str_to_title(sex))
-
-fit_stops <- linear_reg() |>
-  set_engine("lm") |>
-  fit(arrested ~ sex + race*zone, data = x)
+tidy(fit_stops_logistic, conf.int = TRUE) |>
+  select(term, estimate, conf.low, conf.high) |>
+  mutate(across(where(is.numeric), ~round(., 3))) |>
+  knitr::kable(
+    caption = "Logistic Regression Estimates for Arrest Probability (Source: Traffic stops dataset filtered for Black and White drivers)"
+  )
 ```

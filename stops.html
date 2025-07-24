@@ -99,7 +99,16 @@ window.Quarto = {
 </header>
 
 
-<p>Racial disparities in policing continue to raise important questions about equity and justice, especially during routine traffic stops. Using data from the Stanford Open Policing Project, which documents over 400,000 traffic stops in New Orleans from 2011 to 2018, this project explores whether a driver’s race influences their likelihood of being arrested, even after accounting for other factors like age, sex, and location.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="stops_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Racial disparities in policing continue to raise important questions about equity and justice, especially during routine traffic stops. Using data from the Stanford Open Policing Project, which documents over 400,000 traffic stops in New Orleans from 2011 to 2018, this project explores whether a driver’s race influences their likelihood of being arrested, even after accounting for other factors like age, sex, and location. We model the likelihood of arrest during a traffic stop—a binary outcome—as a logistic function of the driver’s race and sex, allowing us to estimate how these characteristics are associated with arrest probability. One limitation of our analysis is that the data may not fully reflect the broader population, as the dataset has been substantially reduced from its original form and may contain biases introduced by non-random patterns in officer behavior or regional enforcement practices. Black males in Zone 3 had the highest predicted arrest probability at 32% (95% CI: 30% to 34%), while White females in the same zone had the lowest at 24% (95% CI: 22% to 26%), highlighting a substantial disparity in outcomes even after adjusting for other factors.</p>
 <p><span class="math display">\[
 P(Y = 1) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
 \]</span></p>
@@ -107,6 +116,54 @@ P(Y = 1) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \bet
 Y \sim \text{Bernoulli}(\rho), \quad \text{where} \quad
 \rho = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
 \]</span></p>
+<p><span class="math display">\[
+\widehat{\text{arrested}} = 0.177
++ 0.0614 \cdot \text{sex}_{\text{Male}}
+- 0.0445 \cdot \text{race}_{\text{White}}
++ 0.0146 \cdot \text{zone}_{\text{B}}
++ 0.00610 \cdot \text{zone}_{\text{C}}
++ 0.0781 \cdot \text{zone}_{\text{D}}
++ 0.00190 \cdot \text{zone}_{\text{E}}
+- 0.00271 \cdot \text{zone}_{\text{F}}
++ 0.0309 \cdot \text{zone}_{\text{G}}
++ 0.0757 \cdot \text{zone}_{\text{H}}
++ \text{(interaction terms for race and zone)}
+\]</span></p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Logistic Regression Estimates for Arrest Probability (Source: Traffic stops dataset filtered for Black and White drivers)</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">conf.low</th>
+<th style="text-align: right;">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">-1.373</td>
+<td style="text-align: right;">-1.389</td>
+<td style="text-align: right;">-1.358</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sexMale</td>
+<td style="text-align: right;">0.366</td>
+<td style="text-align: right;">0.349</td>
+<td style="text-align: right;">0.383</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">raceWhite</td>
+<td style="text-align: right;">-0.259</td>
+<td style="text-align: right;">-0.277</td>
+<td style="text-align: right;">-0.242</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 </main>
 <!-- /main column -->
