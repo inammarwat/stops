@@ -12,6 +12,18 @@ execute:
 ```{r}
 library(tidyverse)
 library(primer.data)
+library(tidymodels)
+library(broom)
 ```
 
 Racial disparities in policing continue to raise important questions about equity and justice, especially during routine traffic stops. Using data from the Stanford Open Policing Project, which documents over 400,000 traffic stops in New Orleans from 2011 to 2018, this project explores whether a driver's race influences their likelihood of being arrested, even after accounting for other factors like age, sex, and location.
+One limitation of our analysis is that the data may not fully reflect the broader population, as the dataset has been substantially reduced from its original form and may contain biases introduced by non-random patterns in officer behavior or regional enforcement practices.
+
+$$
+P(Y = 1) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
+$$
+
+$$
+Y \sim \text{Bernoulli}(\rho), \quad \text{where} \quad 
+\rho = \frac{1}{1 + e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_n X_n)}}
+$$
